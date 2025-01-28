@@ -1,69 +1,63 @@
 <!DOCTYPE html>
+<?php session_start(); ?>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dia <?php echo date('d');?></title>
+    <title>Gerenciador de tarefas </title>
 </head>
 <body>
+    <h1>Gerenciador de Contatos</h1>
+    <form method="GET">
+        <fieldset>
+            <legend>Dados Cadastrais </legend>
+            <label >
+                Nome Completo:
+                <input type="text" name= "nome">
+            </label>
+            <br><label >
+                Telefone de Contato:
+                <input type="text" name= "telefone">
+            </label>
+            <br><label >
+                E-mail:
+                <input type="text" name= "email">
+            </label>
+            <br><input type="submit" value= "Cadastrar">
+        </fieldset>
+    </form>
     <?php 
-    function linha($semana) { 
-        $diaatual = date ('j');
-    
-        echo "<tr>";
-        for ($i = 0; $i <= 6; $i++) {
-            if (isset($semana[$i])) {
-                if ($semana[$i] == $diaatual){
-                    echo "<td><strong>{$semana[$i]}</strong></td>"; 
-                } else { 
-                echo "<td>{$semana[$i]}</td>";
-                }
-            } else {
-                echo "<td></td>";
-            }   
+        if (isset($_GET['nome']) && isset($_GET['telefone']) && isset($_GET['email'])){ 
+            $contato = [
+                'nome' => $_GET ['nome'],
+                'telefone' => $_GET ['telefone'],
+                'email' => $_GET ['email']
+            ];
+            if (!isset($_SESSION['lista'])){
+                $_SESSION['lista'] = [];
             }
-        echo "</tr>";        
+            $_SESSION['lista'][] = $contato;
         }
-    function calendario()
-    {
-        $dia = 1;
-        $semana = array();
-        while ($dia <= 31 ){
-            array_push($semana, $dia);
-            if (count($semana) == 7) {
-                linha($semana);
-                $semana = array();
-            }
-            $dia++;
+        $lista = [];
+        if (isset($_SESSION['lista'])) {
+            $lista = $_SESSION['lista'];
         }
-        linha($semana);
-    }
     ?>
-    <?php 
-    $hora = date('H');
-    if ($hora >= 5 && $hora < 12){
-        $saudação = "Bom Dia";
-    } elseif ($hora >= 12 && $hora < 18){
-        $saudação = "Boa Tarde";
-    }else {
-        $saudação = "Boa Noite";
-    }
-    echo "<h1> $saudação!</h1>"
-    ?>
-    
-
-    <table border = "1">
+    <table border="1">
         <tr>
-            <th>Dom</th>
-            <th>Seg</th>
-            <th>Ter</th>
-            <th>Qua</th>
-            <th>Qui</th>
-            <th>Sex</th>
-            <th>Sab</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>E-mail</th>
         </tr>
-        <?php calendario(); ?>
+        <?php if (!empty ($lista)) : ?>
+            <?php foreach($lista as $contato) : ?>
+                <tr>
+                    <td><?php echo isset($contato['nome']) ? htmlspecialchars($contato['nome']) : '' ; ?></td>
+                    <td><?php echo isset($contato['telefone']) ? htmlspecialchars($contato['telefone']) : '' ; ?></td>
+                    <td><?php echo isset($contato['email']) ? htmlspecialchars($contato['email']) : '' ; ?></td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
     </table>
-  
 </body>
 </html>
